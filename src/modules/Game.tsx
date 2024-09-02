@@ -56,6 +56,24 @@ const App: React.FC = () => {
     return () => clearInterval(countdown);
   }, [gameOver, isPaused]);
 
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'ArrowLeft') {
+        handleSwipe('left');
+      } else if (event.key === 'ArrowRight') {
+        handleSwipe('right');
+      } else if (event.key === ' ') {
+        togglePause();
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [isPaused, gameOver]);
+
   const startGame = () => {
     setHasStarted(true);
     setGameOver(false);
