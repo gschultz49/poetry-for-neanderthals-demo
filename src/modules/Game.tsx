@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useSwipeable } from 'react-swipeable';
 
-const TIME_TO_PLAY = 60; // Define the constant for the game duration
+const TIME_TO_PLAY = 10; // Define the constant for the game duration
 
 const wordBank = [
   'Breakfast Menu',
@@ -90,7 +90,6 @@ const App: React.FC = () => {
   const handlers = useSwipeable({
     onSwipedLeft: () => handleSwipe('left'),
     onSwipedRight: () => handleSwipe('right'),
-    preventDefaultTouchmoveEvent: true,
     trackMouse: true, // Allows mouse swiping for testing on desktops
   });
 
