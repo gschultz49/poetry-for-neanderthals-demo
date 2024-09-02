@@ -1,82 +1,31 @@
 import React, { useState, useEffect } from 'react';
 import { useSwipeable } from 'react-swipeable';
+import { wordBank } from './wordbank'; // Import wordBank from the wordbank file
 
 const TIME_TO_PLAY = 60; // Define the constant for the game duration
 
-const wordBank = [
-  'Breakfast Menu',
-  'Rollerblade',
-  'Cookie Crumbs',
-  'Surprise Birthday Party',
-  'Pie Crust',
-  'Hey, batter, batter!',
-  'Small Fry',
-  'Salad Bar',
-  'Animal Cracker',
-  'Bad Apple',
-  'Catnap',
-  'Cotton Candy',
-  'Ejection Seat',
-  'Bagpipes',
-  'Babysitter',
-  'Hacky Sack',
-  'Full Circle',
-  'Close Encounter',
-  'Anteater',
-  'Caesar Salad',
-  'Carrot Cake',
-  'Bird Cage',
-  'Poop Scoop',
-  'Snow Angel',
-  'Spider Bite',
-  'Road Rage',
-  'Water Balloon Fight',
-  'Sand Castle',
-  'Funny Bone',
-  'Disposable Camera',
-  'Barn Owl',
-  'Massage Table',
-  'Radioactive',
-  'Sponge Bath',
-  'Movie Popcorn',
-  'Puppy Party',
-  'Bounce Back',
-  'Paintbrush',
-  'Clam Chowder',
-  'Pickle Jar',
-  'Free Advice',
-  'Alligator Wrestling',
-  'Sandstorm',
-  'Waffle Cone',
-  'Pump Iron',
-  'Parade Float',
-  'Wedding Crasher',
-  'Lightning Bug',
-  'Pumpkin Patch',
-  'Winter Break',
-];
-
 const App: React.FC = () => {
-  const [index, setIndex] = useState(Math.floor(Math.random() * wordBank.length)); // Randomize the starting word
+  const [index, setIndex] = useState(Math.floor(Math.random() * wordBank.length));
   const [swipeClass, setSwipeClass] = useState('');
   const [timer, setTimer] = useState(TIME_TO_PLAY);
   const [message, setMessage] = useState<string | null>(null);
   const [gameOver, setGameOver] = useState(false);
-  const [isPaused, setIsPaused] = useState(false); // State for timer pause
-  const [successCount, setSuccessCount] = useState(0); // Count for successes
-  const [failureCount, setFailureCount] = useState(0); // Count for failures
+  const [isPaused, setIsPaused] = useState(true);
+  const [successCount, setSuccessCount] = useState(0);
+  const [failureCount, setFailureCount] = useState(0);
+  const [hasStarted, setHasStarted] = useState(false);
 
   const handleSwipe = (direction: 'left' | 'right') => {
-    if (gameOver || isPaused) return; // Ignore swipes if game is over or paused
+    if (gameOver || isPaused) return;
 
     if (direction === 'right') {
       setMessage('Success');
       setSwipeClass('swipe-right');
-      setSuccessCount((prev) => prev + 1); // Increment success count
+      setSuccessCount((prev) => prev + 1);
     } else {
       setMessage('Failure');
       setSwipeClass('swipe-left');
-      setFailureCount((prev) => prev + 1); // Increment failure count
+      setFailureCount((prev) => prev + 1);
     }
 
     setTimeout(() => {
@@ -89,16 +38,16 @@ const App: React.FC = () => {
   const handlers = useSwipeable({
     onSwipedLeft: () => handleSwipe('left'),
     onSwipedRight: () => handleSwipe('right'),
-    trackMouse: true, // Allows mouse swiping for testing on desktops
+    trackMouse: true,
   });
 
   useEffect(() => {
-    if (gameOver || isPaused) return; // Stop timer if game is over or paused
+    if (gameOver || isPaused) return;
 
     const countdown = setInterval(() => {
       setTimer((prev) => {
         if (prev === 1) {
-          setGameOver(true); // End the game when the timer hits 0
+          setGameOver(true);
         }
         return prev > 0 ? prev - 1 : 0;
       });
@@ -107,17 +56,23 @@ const App: React.FC = () => {
     return () => clearInterval(countdown);
   }, [gameOver, isPaused]);
 
-  const restartGame = () => {
+  const startGame = () => {
+    setHasStarted(true);
     setGameOver(false);
-    setIsPaused(false);
-    setIndex(Math.floor(Math.random() * wordBank.length)); // Randomize the starting word
+    setIsPaused(true); // Set the game to paused state when restarting
+    setIndex(Math.floor(Math.random() * wordBank.length));
     setTimer(TIME_TO_PLAY);
-    setSuccessCount(0); // Reset success count
-    setFailureCount(0); // Reset failure count
+    setSuccessCount(0);
+    setFailureCount(0);
   };
 
   const togglePause = () => {
-    setIsPaused((prev) => !prev);
+    if (!hasStarted) {
+      setHasStarted(true);
+      setIsPaused(false);
+    } else {
+      setIsPaused((prev) => !prev);
+    }
   };
 
   const resetCounts = () => {
@@ -132,7 +87,7 @@ const App: React.FC = () => {
         <div className="text-xl mb-2">Successes: {successCount}</div>
         <div className="text-xl mb-6">Failures: {failureCount}</div>
         <button
-          onClick={restartGame}
+          onClick={startGame}
           className="px-4 py-2 bg-blue-500 text-white rounded-lg shadow-md hover:bg-blue-600 transition"
         >
           Restart Game
@@ -148,7 +103,13 @@ const App: React.FC = () => {
           onClick={togglePause}
           className="px-4 py-2 bg-gray-800 text-white rounded-full shadow-md hover:bg-gray-700 transition"
         >
-          {isPaused ? 'Resume' : 'Pause'}
+          {isPaused && !hasStarted ? 'Start' : isPaused ? 'Resume' : 'Pause'}
+        </button>
+        <button
+          onClick={startGame}
+          className="px-4 py-2 bg-blue-500 text-white rounded-full shadow-md hover:bg-blue-600 transition"
+        >
+          Restart Game
         </button>
         <button
           onClick={resetCounts}
@@ -177,9 +138,9 @@ const App: React.FC = () => {
           {message}
         </div>
       )}
-      <div className="absolute bottom-4 flex space-x-4">
-        <div className="text-xl">Successes: {successCount}</div>
-        <div className="text-xl">Failures: {failureCount}</div>
+      <div className="mt-4 flex space-x-4">
+        <div className="text-xl text-green-500">Successes: {successCount}</div>
+        <div className="text-xl text-red-500">Failures: {failureCount}</div>
       </div>
     </div>
   );
