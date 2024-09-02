@@ -1,3 +1,16 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* Prevent scrolling during swipe gestures */
+html,
+body {
+    overflow: hidden;
+    touch-action: none;
+    /* Prevents scroll and pinch zoom */
+}
+
+body {
+    -webkit-overflow-scrolling: touch;
+    /* Smooth scrolling for iOS */
+}

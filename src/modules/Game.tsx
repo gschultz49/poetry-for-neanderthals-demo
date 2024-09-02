@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { useSwipeable } from 'react-swipeable';
 
+const TIME_TO_PLAY = 60; // Define the constant for the game duration
+
 const wordBank = [
   'Breakfast Menu',
-  'Roller-blade',
+  'Rollerblade',
   'Cookie Crumbs',
   'Surprise Birthday Party',
   'Pie Crust',
@@ -55,11 +57,9 @@ const wordBank = [
 ];
 
 const App: React.FC = () => {
-  const [index, setIndex] = useState(
-    Math.floor(Math.random() * wordBank.length)
-  ); // Randomize the starting word
+  const [index, setIndex] = useState(Math.floor(Math.random() * wordBank.length)); // Randomize the starting word
   const [swipeClass, setSwipeClass] = useState('');
-  const [timer, setTimer] = useState(60);
+  const [timer, setTimer] = useState(TIME_TO_PLAY);
   const [message, setMessage] = useState<string | null>(null);
   const [gameOver, setGameOver] = useState(false);
   const [isPaused, setIsPaused] = useState(false); // State for timer pause
@@ -83,7 +83,7 @@ const App: React.FC = () => {
       setSwipeClass('');
       setMessage(null);
       setIndex((prev) => (prev + 1) % wordBank.length);
-      setTimer(60); // Reset the timer
+      setTimer(TIME_TO_PLAY); // Reset the timer
     }, 300);
   };
 
@@ -113,7 +113,7 @@ const App: React.FC = () => {
     setGameOver(false);
     setIsPaused(false);
     setIndex(Math.floor(Math.random() * wordBank.length)); // Randomize the starting word
-    setTimer(60);
+    setTimer(TIME_TO_PLAY);
     setSuccessCount(0); // Reset success count
     setFailureCount(0); // Reset failure count
   };
@@ -130,7 +130,9 @@ const App: React.FC = () => {
   if (gameOver) {
     return (
       <div className="flex flex-col justify-center items-center h-screen bg-gray-100">
-        <div className="text-3xl mb-4">Game ended, restart?</div>
+        <div className="text-3xl mb-4">Game ended</div>
+        <div className="text-xl mb-2">Successes: {successCount}</div>
+        <div className="text-xl mb-6">Failures: {failureCount}</div>
         <button
           onClick={restartGame}
           className="px-4 py-2 bg-blue-500 text-white rounded-lg shadow-md hover:bg-blue-600 transition"
@@ -142,7 +144,7 @@ const App: React.FC = () => {
   }
 
   return (
-    <div className="relative flex flex-col justify-center items-center h-screen bg-gray-100">
+    <div className="relative flex flex-col justify-center items-center h-screen bg-gray-100 overflow-hidden">
       <div className="absolute top-4 right-4 flex items-center space-x-2">
         <button
           onClick={togglePause}
@@ -157,28 +159,14 @@ const App: React.FC = () => {
           Reset Counts
         </button>
       </div>
-      <div
-        className={`text-2xl mb-4 ${
-          timer === 0 ? 'text-red-500' : timer <= 10 ? 'text-yellow-500' : ''
-        }`}
-      >
-        {timer <= 10 && timer > 0
-          ? `${timer} seconds left!`
-          : `Time left: ${timer}s`}
+      <div className={`text-2xl mb-4 ${timer === 0 ? 'text-red-500' : timer <= 10 ? 'text-yellow-500' : ''}`}>
+        {timer <= 10 && timer > 0 ? `${timer} seconds left!` : `Time left: ${timer}s`}
       </div>
       <div
         {...handlers}
         className={`w-80 h-48 bg-white rounded-lg shadow-lg flex justify-center items-center text-xl text-gray-700 
-          transition-transform duration-300 ${
-            swipeClass === 'swipe-left'
-              ? 'transform -translate-x-full rotate-12'
-              : ''
-          } 
-          ${
-            swipeClass === 'swipe-right'
-              ? 'transform translate-x-full -rotate-12'
-              : ''
-          }`}
+          transition-transform duration-300 ${swipeClass === 'swipe-left' ? 'transform -translate-x-full rotate-12' : ''} 
+          ${swipeClass === 'swipe-right' ? 'transform translate-x-full -rotate-12' : ''}`}
       >
         {wordBank[index]}
       </div>
