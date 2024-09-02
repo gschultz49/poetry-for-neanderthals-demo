@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useSwipeable } from 'react-swipeable';
 
-const TIME_TO_PLAY = 10; // Define the constant for the game duration
+const TIME_TO_PLAY = 60; // Define the constant for the game duration
 
 const wordBank = [
   'Breakfast Menu',
@@ -83,7 +83,6 @@ const App: React.FC = () => {
       setSwipeClass('');
       setMessage(null);
       setIndex((prev) => (prev + 1) % wordBank.length);
-      setTimer(TIME_TO_PLAY); // Reset the timer
     }, 300);
   };
 
@@ -185,4 +184,5 @@ const App: React.FC = () => {
     </div>
   );
 };
+
 export default App;
